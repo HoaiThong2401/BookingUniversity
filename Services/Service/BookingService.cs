@@ -15,11 +15,14 @@ namespace Services.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public BookingService(IUnitOfWork unitOfWork, IUserService userService, IHttpContextAccessor httpContextAccessor)
+        private readonly IEmailService _emailService;
+        public BookingService(IUnitOfWork unitOfWork, IUserService userService, IHttpContextAccessor httpContextAccessor 
+            ,IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
+            _emailService = emailService;
         }
         public void SaveBooking(List<BookingDetailModel> bookingModels, int userId)
         {
@@ -143,14 +146,14 @@ namespace Services.Service
                         SlotEndTime = bd.Slot?.EndTime ?? default(TimeOnly),
                         RoomName = bd.Room?.Name ?? "Unknown",
                         Reason = bd.Reason,
-                        Status = bd.Status
+                        Status = bd.Status,
+                        RoomId = bd.RoomId,
                     };
 
                     return bookingDetail;
                 }).ToList()
             };
 
-            Console.WriteLine($"Check: {bookingModel}");
             return bookingModel;
 
 
@@ -162,20 +165,20 @@ namespace Services.Service
                 .Include(b => b.BookingDetails)
                 .FirstOrDefault(b => b.Id == updatedBooking.BookingId && b.DeletedAt == null);
 
-            if (booking == null || booking.Status != 0)
+            if (booking == null)
             {
                 return false;
             }
-               
 
+            var bookingDetails = _unitOfWork.BookingDetailRepository.Entities.Where(bd => bd.BookingId == updatedBooking.BookingId).ToList();
             booking.UpdatedAt = DateTime.UtcNow;
 
-            foreach (var detail in updatedBooking.BookingDetails)
+            foreach (var detail in bookingDetails)
             {
                 var existingDetail = booking.BookingDetails.FirstOrDefault(bd => bd.Id == detail.Id);
                 if (existingDetail != null)
                 {
-                    existingDetail.BookingDate = DateOnly.FromDateTime(detail.BookingDate);
+                    existingDetail.BookingDate = detail.BookingDate;
                     existingDetail.SlotId = detail.SlotId;
                     existingDetail.RoomId = detail.RoomId;
                     existingDetail.Reason = detail.Reason;
@@ -216,6 +219,7 @@ namespace Services.Service
                 throw new Exception("User not found");
             }
 
+            if (status == null) status = 0;
             var departmentId = currentUser.DepartmentId;
 
             var userIdsInDepartment = _unitOfWork.UserRepository.Entities
@@ -223,7 +227,7 @@ namespace Services.Service
                 .Select(u => u.Id)
                 .ToList();
             var bookingIdsWithStatus = _unitOfWork.BookingDetailRepository.Entities
-                .Where(bd => status.HasValue && bd.Status == status.Value)
+                .Where(bd => status.HasValue && bd.Status == status.Value && bd.DeletedAt == null)
                 .Select(bd => bd.BookingId)
                 .ToList();
             var query = _unitOfWork.BookingRepository.Entities
@@ -332,6 +336,49 @@ namespace Services.Service
             };
         }
 
+        public async Task<bool> ApproveBooking(int bookingDetailId, bool status)
+        {
+            BookingDetail? bookingDetail = _unitOfWork.BookingDetailRepository.Entities
+                .Where(b => b.Id == bookingDetailId)
+                .Include(b => b.Booking)
+                .ThenInclude(b => b.User)
+                .Include(b => b.Booking)
+                .Include(b => b.Room)
+                .Include(b => b.Slot)
+                .FirstOrDefault();
+            if(bookingDetail != null)
+            {
+                string message;
+                var user = bookingDetail.Booking.User;
+                string subject = "This is email to notify";
 
+                if (status)
+                {
+                    bookingDetail.Status = 1;
+                    message = $"Your booking ID: {bookingDetail.BookingId}, " +
+                                     $"BookingDetail ID {bookingDetailId}: Booking Date: {bookingDetail.BookingDate}, " +
+                                     $"Booking Slot: {bookingDetail.Slot.StartTime}, Booking Room: {bookingDetail.Room.Name}, " +
+                                     $"Reason Booking: {bookingDetail.Reason} " +
+                                     $"approved by head department";
+                      
+                }
+                else
+                {
+                    message = $"Your booking ID: {bookingDetail.BookingId}, " +
+                              $"BookingDetail ID {bookingDetailId}: Booking Date: {bookingDetail.BookingDate}, " +
+                              $"Booking Slot: {bookingDetail.Slot.StartTime}, Booking Room: {bookingDetail.Room.Name}, " +
+                              $"Reason Booking: {bookingDetail.Reason} " +
+                              $"canceled by head department";
+                    bookingDetail.Status = 2;
+                }
+
+                if (_unitOfWork.BookingDetailRepository.Update(bookingDetail))
+                {
+                    await _emailService.SendEmailWithQrCodeAsync(user.Email, subject, message );
+                    return true;    
+                }
+            }
+            return false;
+        }
     }
 }

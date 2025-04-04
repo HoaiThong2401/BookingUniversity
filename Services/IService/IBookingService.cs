@@ -14,6 +14,8 @@ namespace Services.IService
         PaginatedBookingResponse GetBookings(int? status, int? slotId, string roomName, int pageNumber = 1, int pageSize = 10);
         BookingModel GetBookingById(int bookingId);
         bool UpdateBooking(BookingModel updatedBooking);
+        Task<bool> ApproveBooking(int bookingDetailId, bool status);
+
         bool DeleteBooking(int bookingId);
         PaginatedBookingResponse GetBookingForHeadDepartments(int? status, int pageNumber = 1, int pageSize = 10);
         BookingModel GetBookingByBookingDetailId(int bookingDetailId, int bookingId);

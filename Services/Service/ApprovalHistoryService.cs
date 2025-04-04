@@ -32,11 +32,8 @@ namespace Services.Service
                         UserBookingId = approvalHistoryModel.UserBookingId,
                         BookingId = approvalHistoryModel.BookingId,
                         BookingDetailId = approvalHistoryModel.BookingDetailId,
-                        HeadDepartmentId = userId,
                         ApprovalByHeadDepartment = approvalHistoryModel.ApprovalByHeadDepartment, 
                         ReasonByHeadApproval = approvalHistoryModel.ReasonByHeadApproval,
-                        //temp
-                        ManagerId = userId,
                     };
 
                     _unitOfWork.ApprovalHistoryRepository.Insert(newApprovalHistory);
@@ -44,13 +41,19 @@ namespace Services.Service
                 }
                 else
                 {
-                    existingApprovalHistory.ManagerId = userId; 
                     existingApprovalHistory.ApprovalByManager = approvalHistoryModel.ApprovalByManager;
                     existingApprovalHistory.ReasonByManager = approvalHistoryModel.ReasonByManager;
                     _unitOfWork.ApprovalHistoryRepository.Update(existingApprovalHistory);
                     _unitOfWork.Save();
                 }
             }
+        public int? GetApprovalHistoryIdByBooking(int bookingDetailId, int bookingId)
+        {
+            var approvalHistory = _unitOfWork.ApprovalHistoryRepository.Entities
+                .FirstOrDefault(ah => ah.BookingDetailId == bookingDetailId && ah.BookingId == bookingId);
+
+            return approvalHistory?.Id;
+        }
 
     }
 }

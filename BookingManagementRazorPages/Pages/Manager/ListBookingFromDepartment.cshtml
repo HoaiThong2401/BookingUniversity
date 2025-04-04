@@ -133,12 +133,12 @@
                                 <form method="post" asp-page-handler="Approve" class="d-inline">
                                     <input type="hidden" name="bookingDetailId" value="@detail.Id" />
                                     <input type="hidden" name="bookingId" value="@booking.BookingId" />
-                                    <button type="submit" class="button-approved">Approved</button>
+                                    <button type="submit" class="button-approved" disabled="@(detail.Status != 0)">Approved</button>
                                 </form>
                                 <form method="post" asp-page-handler="Deny" class="d-inline">
                                     <input type="hidden" name="bookingDetailId" value="@detail.Id" />
                                     <input type="hidden" name="approvalStatus" value="false" />
-                                    <button type="submit" class="button-denied">Denied</button>
+                                    <button type="submit" class="button-denied" disabled="@(detail.Status != 0)">Denied</button>
                                 </form>
                             </td>
                         </tr>

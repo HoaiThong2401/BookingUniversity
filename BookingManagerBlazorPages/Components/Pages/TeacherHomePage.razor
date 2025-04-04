@@ -13,8 +13,8 @@
 
 <h2 class="text-center text-primary">Create New Booking</h2>
 
-@* @if (IsValidRole)
-{} *@
+@if (IsValidRole)
+{
 <div class="d-flex align-items-center">
     <button class="btn btn-primary custom-btn" @onclick="GoToCreateBooking"> 
         Create Booking
@@ -126,10 +126,10 @@
 </style>
 
 }
-@* else
+else
 {
 <p>You are not authorized to view this page.</p>
-} *@
+}
 
 @code {
     private List<BookingDetailModel> bookings = new List<BookingDetailModel>();
@@ -140,6 +140,9 @@
     private string alertClass = string.Empty;
     private bool IsValidRole = false;
     private bool redirectToHome = false;
+    public static int roleId;
+    public static int userId;
+
 
     // protected override void OnAfterRender(bool firstRender)
     // {
@@ -154,25 +157,28 @@
 
     protected override void OnInitialized()
     {
-        // var uri = Navigation.Uri;
-        // var uriQuery = new Uri(uri).Query;
-        // var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriQuery);
+        var uri = Navigation.Uri;
+        var uriQuery = new Uri(uri).Query;
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriQuery);
 
-        // if (queryParams.ContainsKey("roleId") && queryParams["roleId"] == "3" && !string.IsNullOrEmpty(queryParams["userId"]))
-        // {
-        //     JS.InvokeVoidAsync("setCookie", "roleId", queryParams["roleId"].ToString(), 1.0 / 6);
-        //     JS.InvokeVoidAsync("setCookie", "userId", queryParams["userId"].ToString(), 1.0 / 6);
-        //     JS.InvokeVoidAsync("setCookie", "name", queryParams["name"].ToString(), 1.0 / 6);
+        if (queryParams.ContainsKey("roleId") && queryParams["roleId"] == "3" && !string.IsNullOrEmpty(queryParams["userId"]))
+        {
+            // JS.InvokeVoidAsync("setCookie", "roleId", queryParams["roleId"].ToString(), 1.0 / 6);
+            // JS.InvokeVoidAsync("setCookie", "userId", queryParams["userId"].ToString(), 1.0 / 6);
 
-        //     IsValidRole = true;
-        // }
-        // else
-        // {
-        //     IsValidRole = false;
-        //     redirectToHome = true;
-        // }
-        rooms = RoomService.GetRooms();
-        slots = SlotService.GetSlots();
+            roleId = int.Parse(queryParams["roleId"]);
+            userId = int.Parse(queryParams["userId"]);
+
+            rooms = RoomService.GetRooms();
+            slots = SlotService.GetSlots();
+            IsValidRole = true;
+        }
+        else
+        {
+            IsValidRole = false;
+            redirectToHome = true;
+        }
+        
     }
 
     private void GoToCreateBooking()
@@ -201,7 +207,6 @@
     {
         try
         {
-            var userId = 1;
             BookingService.SaveBooking(bookings, userId);
             bookings.Clear();
 

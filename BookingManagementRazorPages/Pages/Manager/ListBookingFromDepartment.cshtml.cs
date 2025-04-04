@@ -43,7 +43,8 @@ namespace BookingManagementRazorPages.Pages.Manager
             {
                 TempData["ErrorMessage"] = "You dont't have permission for thí function!";
                 return RedirectToPage("/Index");
-            } else
+            }
+            else
             {
                 var paginatedBookings = _bookingService.GetBookingForManagers(status, pageNumber);
                 Bookings = paginatedBookings.Bookings;
@@ -54,6 +55,21 @@ namespace BookingManagementRazorPages.Pages.Manager
             }
 
         }
+        private int GetUserIdFromClaims()
+        {
+            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value
+                ?? _httpContextAccessor.HttpContext?.User?.FindFirst("id")?.Value
+                ?? _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return int.TryParse(userIdStr, out var userId) ? userId : 0;
+        }
+
+        private int GetRoleIdFromClaims()
+        {
+            var roleIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
+            return int.TryParse(roleIdStr, out var roleId) ? roleId : 0;
+        }
+
         public IActionResult OnPostApprove(int bookingDetailId, int bookingId)
         {
             var bookingDetail = _bookingService.GetBookingByBookingDetailId(bookingDetailId, bookingId);
@@ -62,21 +78,17 @@ namespace BookingManagementRazorPages.Pages.Manager
             {
                 return NotFound();
             }
-            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value
-                ?? _httpContextAccessor.HttpContext?.User?.FindFirst("id")?.Value
-                ?? _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userId = int.Parse(userIdStr);
+            int? approvalHistoryId = _approvalHistoryService.GetApprovalHistoryIdByBooking(bookingDetailId, bookingId);
             var approvalHistory = new ApprovalHistoryModel
             {
-                BookingId = bookingId,
-                BookingDetailId = bookingDetailId,
-                ApprovalByHeadDepartment = true,
-                ReasonByHeadApproval = "Approved by Head Department",
-                UserBookingId = bookingDetail.UserId,
-                CampusId = bookingDetail.CampusId,
-                DepartmentId = bookingDetail.DepartmentId
+                Id = approvalHistoryId ?? 0,
+                ApprovalByManager = true,
+                ReasonByManager = "Approval by manager",
             };
+            var userId = GetUserIdFromClaims();
 
+            bookingDetail.Status = 1;
+            _bookingService.UpdateBooking(bookingDetail);
             _approvalHistoryService.SaveApprovalHistory(approvalHistory, userId);
 
             return RedirectToPage();
@@ -90,20 +102,18 @@ namespace BookingManagementRazorPages.Pages.Manager
             {
                 return NotFound();
             }
-            var userIdStr = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value
-                ?? _httpContextAccessor.HttpContext?.User?.FindFirst("id")?.Value
-                ?? _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userId = int.Parse(userIdStr);
+            int? approvalHistoryId = _approvalHistoryService.GetApprovalHistoryIdByBooking(bookingDetailId, bookingId);
             var approvalHistory = new ApprovalHistoryModel
             {
-                BookingId = bookingId,
-                BookingDetailId = bookingDetailId,
-                ApprovalByHeadDepartment = false,
-                ReasonByHeadApproval = "Denied by Head Department",
-                UserBookingId = bookingDetail.UserId,
-                CampusId = bookingDetail.CampusId,
-                DepartmentId = bookingDetail.DepartmentId
+                Id = approvalHistoryId ?? 0,
+                ApprovalByManager = false,
+                ReasonByManager = "Denied by Manager",
             };
+            var userId = GetUserIdFromClaims();
+
+            bookingDetail.Status = 2;
+            _bookingService.UpdateBooking(bookingDetail);
+
             _approvalHistoryService.SaveApprovalHistory(approvalHistory, userId);
 
             return RedirectToPage();

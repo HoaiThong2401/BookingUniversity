@@ -17,13 +17,9 @@ public partial class ApprovalHistory
 
     public int BookingDetailId { get; set; }
 
-    public int HeadDepartmentId { get; set; }
-
     public bool ApprovalByHeadDepartment { get; set; }
 
     public string? ReasonByHeadApproval { get; set; }
-
-    public int ManagerId { get; set; }
 
     public bool ApprovalByManager { get; set; }
 
@@ -36,10 +32,6 @@ public partial class ApprovalHistory
     public virtual Campus Campus { get; set; } = null!;
 
     public virtual Department Department { get; set; } = null!;
-
-    public virtual User HeadDepartment { get; set; } = null!;
-
-    public virtual User Manager { get; set; } = null!;
 
     public virtual User UserBooking { get; set; } = null!;
 }

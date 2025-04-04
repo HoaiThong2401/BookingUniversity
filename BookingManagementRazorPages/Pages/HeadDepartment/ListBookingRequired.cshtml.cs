@@ -27,7 +27,7 @@ namespace BookingManagementRazorPages.Pages.HeadDepartment
 
         public IActionResult OnGet(int? status, int pageNumber = 1)
         {
-            var paginatedBookings = _bookingService.GetBookingForHeadDepartments(status,pageNumber);
+            var paginatedBookings = _bookingService.GetBookingForHeadDepartments(status, pageNumber);
 
             Bookings = paginatedBookings.Bookings;
             TotalItems = paginatedBookings.TotalItems;
@@ -58,7 +58,8 @@ namespace BookingManagementRazorPages.Pages.HeadDepartment
                 DepartmentId = bookingDetail.DepartmentId
             };
 
-            _approvalHistoryService.SaveApprovalHistory(approvalHistory, userId); 
+            _bookingService.ApproveBooking(bookingDetailId, true);
+            _approvalHistoryService.SaveApprovalHistory(approvalHistory, userId);
 
             return RedirectToPage();
         }
@@ -85,6 +86,8 @@ namespace BookingManagementRazorPages.Pages.HeadDepartment
                 CampusId = bookingDetail.CampusId,
                 DepartmentId = bookingDetail.DepartmentId
             };
+
+            _bookingService.ApproveBooking(bookingDetailId, false);
             _approvalHistoryService.SaveApprovalHistory(approvalHistory, userId);
 
             return RedirectToPage();

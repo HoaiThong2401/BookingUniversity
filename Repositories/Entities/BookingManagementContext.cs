@@ -82,17 +82,7 @@ public partial class BookingManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ApprovalHistory_Department");
 
-            entity.HasOne(d => d.HeadDepartment).WithMany(p => p.ApprovalHistoryHeadDepartments)
-                .HasForeignKey(d => d.HeadDepartmentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ApprovalHistory_HeadDepartment");
-
-            entity.HasOne(d => d.Manager).WithMany(p => p.ApprovalHistoryManagers)
-                .HasForeignKey(d => d.ManagerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ApprovalHistory_Manager");
-
-            entity.HasOne(d => d.UserBooking).WithMany(p => p.ApprovalHistoryUserBookings)
+            entity.HasOne(d => d.UserBooking).WithMany(p => p.ApprovalHistories)
                 .HasForeignKey(d => d.UserBookingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ApprovalHistory_User");

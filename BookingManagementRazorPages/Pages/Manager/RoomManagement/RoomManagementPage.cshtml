@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model BookingManagementRazorPages.Pages.Manager.RoomManagement.RoomManagementPageModel
 
 
@@ -6,15 +6,6 @@
 @{
     ViewData["Title"] = "Room List";
 }
-
-@* @if (Request.Cookies["Username"] != null)
-{
-    <p>Hello, @Request.Cookies["Username"]</p>
-    <form method="post">
-        <button asp-page-handler="Logout" class="btn btn-danger">Logout</button>
-    </form>
-}
- *@
 <h1>Room List</h1>
 
 <p>
@@ -105,3 +96,4 @@
 }
 <script src="~/js/microsoft-signalr/signalr.js"></script>
 <script src="~/js/site.js"></script>
+ *@

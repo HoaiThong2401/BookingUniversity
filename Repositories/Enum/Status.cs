@@ -9,7 +9,8 @@ namespace Repositories.Enum
     public enum Status
     {
         Processing = 0,
-        Confirm = 1,
-        Cancelled = 2,
+        ApproveByHeadDepartment = 1,
+        Confirm = 2,
+        Cancelled = 3,
     }
 }

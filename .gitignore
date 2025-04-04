@@ -1,0 +1,70 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio settings
+.vs/
+
+# VS Code settings
+.vscode/
+
+# Rider settings
+.idea/
+
+# Razor and Blazor generated files
+**/Generated/
+**/*.cshtml.g.cs
+**/*.razor.g.cs
+**/*.razor.g.cshtml
+**/*.cshtml.cs.g.cs
+
+# ASP.NET Core environment and secrets
+**/appsettings.Development.json
+**/secrets.json
+.env
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Logs & temp
+*.log
+*.tmp
+*.bak
+*.old
+
+# ReSharper & JetBrains
+_ReSharper*/
+*.DotSettings.user
+
+# NCrunch
+*.ncrunch*
+.*crunch*.local.xml
+
+# SQLite DBs if any
+*.db
+
+# Static Web Assets (Blazor or Razor)
+**/staticwebassets.build.json
+**/staticwebassets.runtime.json
+**/staticwebassets.*
+
+# Others
+*.swp
+.DS_Store
+Thumbs.db

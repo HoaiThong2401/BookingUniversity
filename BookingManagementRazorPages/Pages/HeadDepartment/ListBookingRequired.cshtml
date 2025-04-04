@@ -70,6 +70,14 @@
     .pagination {
         justify-content: center;
     }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+        filter: grayscale(70%);
+    }
+
 </style>
 
 <div class="container">
@@ -121,7 +129,7 @@
                             @if (item == 1)
                             {
                                 <td rowspan="@booking.BookingDetails.Count">@item</td>
-                                <td rowspan="@booking.BookingDetails.Count">@booking.UserId</td>
+                                <td rowspan="@booking.BookingDetails.Count">@booking.UserName</td>
                                 <td rowspan="@booking.BookingDetails.Count">@bookingId</td>
                             }
                             <td>@detail.Id</td>
@@ -129,19 +137,40 @@
                             <td>@detail.SlotId (@detail.SlotStartTime.ToString("HH:mm") - @detail.SlotEndTime.ToString("HH:mm"))</td>
                             <td>@detail.RoomName</td>
                             <td>@detail.Reason</td>
-                            <td>@detail.Status</td>
+                            <td>
+                                @switch (detail.Status)
+                                {
+                                    case 0:
+                                        <text>Processing</text>
+                                        break;
+                                    case 1:
+                                        <text>Approved</text>
+                                        break;
+                                    case 2:
+                                        <text>Canceled</text>
+                                        break;
+                                    case 3:
+                                        <text>Confirmed</text>
+                                        break;
+                                    default:
+                                        <text>Unknown</text>
+                                        break;
+                                }
+                            </td>
+
                             <td>
                                 <form method="post" asp-page-handler="Approve" class="d-inline">
                                     <input type="hidden" name="bookingDetailId" value="@detail.Id" />
                                     <input type="hidden" name="bookingId" value="@booking.BookingId" />
-                                    <button type="submit" class="button-approved">Approved</button>
+                                    <button type="submit" class="button-approved" @(detail.Status != 0 ? "disabled" : null)>Approved</button>
                                 </form>
                                 <form method="post" asp-page-handler="Deny" class="d-inline">
                                     <input type="hidden" name="bookingDetailId" value="@detail.Id" />
-                                    <input type="hidden" name="approvalStatus" value="false" />
-                                    <button type="submit" class="button-denied">Denied</button>
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="button-denied" @(detail.Status != 0 ? "disabled" : null)>Denied</button>
                                 </form>
                             </td>
+
                         </tr>
                         item++;
                     }

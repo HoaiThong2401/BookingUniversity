@@ -27,11 +27,7 @@ public partial class User
 
     public DateTime? DeletedAt { get; set; }
 
-    public virtual ICollection<ApprovalHistory> ApprovalHistoryHeadDepartments { get; set; } = new List<ApprovalHistory>();
-
-    public virtual ICollection<ApprovalHistory> ApprovalHistoryManagers { get; set; } = new List<ApprovalHistory>();
-
-    public virtual ICollection<ApprovalHistory> ApprovalHistoryUserBookings { get; set; } = new List<ApprovalHistory>();
+    public virtual ICollection<ApprovalHistory> ApprovalHistories { get; set; } = new List<ApprovalHistory>();
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

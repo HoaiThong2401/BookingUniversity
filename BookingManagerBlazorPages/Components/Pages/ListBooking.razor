@@ -83,14 +83,18 @@
                             <td>@detail.Reason</td>
                             <td>@GetStatusText(detail.Status)</td>
 
-                            @if (firstRow)
+                            @* @if (firstRow)
                             {
                                 <td rowspan="@booking.BookingDetails.Count">
-                                    <button class="btn btn-danger rounded" @onclick="() => CancelBooking(booking.BookingId)">
-                                        Cancel
-                                    </button>
+                                    <form>
+                                        <input type="hidden" name="BookingId" value="@booking.BookingId" />
+                                        <intput type="submit">
+                                            Cancel
+                                        </intput>
+                                    </form>
+
                                 </td>
-                            }
+                            } *@
 
                         </tr>
                         rowIndex++;
@@ -100,6 +104,7 @@
             </tbody>
         </table>
     }
+
 
     <div class="d-flex justify-content-center mt-4">
         <button class="btn btn-secondary" @onclick="GoToPreviousPage" disabled="@(!HasPreviousPage)" style="background-color: #6a5acd; border-color: #6a5acd;">Previous</button>

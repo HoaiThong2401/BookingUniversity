@@ -43,7 +43,7 @@
                                 <option value="">Select Slot</option>
                                 @foreach (var slot in slots)
                                 {
-                                    <option value="@slot.Id" @(slot.Id= =detail.SlotId ? "selected" : "" )>@slot.Id</option>
+                                    <option value="@slot.Id" @(slot.Id == detail.SlotId ? "selected" : "" )>@slot.Id</option>
                                 }
                             </select>
                         </td>
@@ -52,7 +52,7 @@
                                 <option value="">Select Room</option>
                                 @foreach (var room in rooms)
                                 {
-                                    <option value="@room.Id" @(room.Id= =detail.RoomId ? "selected" : "" )>@room.Name</option>
+                                    <option value="@room.Id" @(room.Id == detail.RoomId ? "selected" : "" )>@room.Name</option>
                                 }
                             </select>
                         </td>

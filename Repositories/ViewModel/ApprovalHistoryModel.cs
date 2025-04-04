@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.ViewModel
 {
-     public class ApprovalHistoryModel
+    public class ApprovalHistoryModel
     {
         public int Id { get; set; }
         public int CampusId { get; set; }

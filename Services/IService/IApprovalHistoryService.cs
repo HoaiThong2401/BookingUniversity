@@ -10,5 +10,6 @@ namespace Services.IService
     public interface IApprovalHistoryService
     {
         void SaveApprovalHistory(ApprovalHistoryModel approvalHistoryModel, int userId);
+        int? GetApprovalHistoryIdByBooking(int bookingDetailId, int bookingId);
     }
 }

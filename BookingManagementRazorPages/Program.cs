@@ -20,6 +20,7 @@ public class Program
         builder.Services.AddScoped<ICampusService, CampusService>();
         builder.Services.AddScoped<IBookingService, BookingService>();
         builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IApprovalHistoryService, ApprovalHistoryService>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

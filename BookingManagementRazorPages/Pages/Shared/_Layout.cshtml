@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@{
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var roleId = isAuthenticated ? User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value : null;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,62 +17,77 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" />
 </head>
 <body>
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-3">
                 <div class="sidebar" id="sidebar">
                     <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
                     <ul class="sidebar-menu">
-                        <li>
-                            <a asp-page="/Manager/UserManagement/UserManagementPage">
-                                <span class="icon"><i class="bi bi-person"></i></span>
-                                <span class="text">User Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Manager/SlotManagement/SlotManagementPage">
-                                <span class="icon"><i class="bi bi-calendar"></i></span>
-                                <span class="text">Slot Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Manager/RoomManagement/RoomManagementPage">
-                                <span class="icon"><i class="bi bi-house-door"></i></span>
-                                <span class="text">Room Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Manager/CampusManagement/CampusManagementPage">
-                                <span class="icon"><i class="bi bi-building"></i></span>
-                                <span class="text">Campus Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Manager/DepartmentManagement/DepartmentManagementPage">
-                                <span class="icon"><i class="bi bi-journal-bookmark"></i></span>
-                                <span class="text">Department Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/Manager/ListBookingFromDepartment">
-                                <span class="icon"><i class="bi bi-list"></i></span>
-                                <span class="text">Booking Requiered Management</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-page="/HeadDepartment/ListBookingRequired">
-                                <span class="icon"><i class="bi bi-list"></i></span>
-                                <span class="text">List Booking Required</span>
-                            </a>
-                        </li>
+                        @if (isAuthenticated)
+                        {
+                            if (roleId == "1")
+                            {
+                                <li>
+                                    <a asp-page="/Manager/UserManagement/UserManagementPage">
+                                        <span class="icon"><i class="bi bi-person"></i></span>
+                                        <span class="text">User Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-page="/Manager/SlotManagement/SlotManagementPage">
+                                        <span class="icon"><i class="bi bi-calendar"></i></span>
+                                        <span class="text">Slot Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-page="/Manager/RoomManagement/RoomManagementPage">
+                                        <span class="icon"><i class="bi bi-house-door"></i></span>
+                                        <span class="text">Room Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-page="/Manager/CampusManagement/CampusManagementPage">
+                                        <span class="icon"><i class="bi bi-building"></i></span>
+                                        <span class="text">Campus Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-page="/Manager/DepartmentManagement/DepartmentManagementPage">
+                                        <span class="icon"><i class="bi bi-journal-bookmark"></i></span>
+                                        <span class="text">Department Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-page="/Manager/ListBookingFromDepartment">
+                                        <span class="icon"><i class="bi bi-list"></i></span>
+                                        <span class="text">Booking Required Management</span>
+                                    </a>
+                                </li>
+                            }
+                            else if (roleId == "2")
+                            {
+                                <li>
+                                    <a asp-page="/HeadDepartment/ListBookingRequired">
+                                        <span class="icon"><i class="bi bi-list"></i></span>
+                                        <span class="text">List Booking Required</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li><span class="text" style="visibility: hidden;">Empty</span></li>
+                        }
                     </ul>
 
-                    <div class="logout">
-                        <a asp-page="/Index">
-                            <span class="logout-icon"><i class="bi bi-box-arrow-right"></i></span>
-                        </a>
-                    </div>
+                    @if (isAuthenticated)
+                    {
+                        <div class="logout">
+                            <a asp-page="/Index">
+                                <span class="logout-icon"><i class="bi bi-box-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
 

@@ -31,7 +31,7 @@ namespace Services.Service
             var roleId = await _unitOfWork.UserRepository
             .Entities
             .Where(u => u.Id == userId)
-            .Select(u => u.DepartmentId) 
+            .Select(u => u.DepartmentId)
             .FirstOrDefaultAsync();
 
             if (roleId == 0)
