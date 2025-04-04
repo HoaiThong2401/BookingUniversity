@@ -1,0 +1,88 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+header {
+    padding: 5px 0;
+}
+
+.navbar-brand h1 {
+    font-size: 24px;
+    margin: 0; 
+}
+
+.navbar {
+    padding: 0.5rem 0; 
+}
+
+.navbar-brand {
+    margin-left: 10px;
+}
+
+.sidebar {
+    background-color: #6a5acd;
+    color: white;
+    padding-top: 20px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    z-index: 1000;
+    padding-bottom: 20px; 
+}
+
+.sidebar-item {
+    margin: 20px 0;
+    text-align: center;
+}
+
+    .sidebar-item a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 12px;
+        font-size: 18px;
+        font-weight: normal;
+        transition: opacity 0.3s ease, font-weight 0.3s ease;
+    }
+
+        .sidebar-item a:hover {
+            opacity: 0.8;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+.col-md-9 {
+    margin-left: 270px; 
+    padding: 20px;
+}
+
+footer {
+    padding: 20px 0;
+}

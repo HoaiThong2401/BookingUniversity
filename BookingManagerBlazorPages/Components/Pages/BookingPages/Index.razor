@@ -1,0 +1,40 @@
+﻿@page "/bookings"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Repositories.Entities
+@using Repositories.Entities
+@implements IAsyncDisposable
+@inject IDbContextFactory<Repositories.Entities.BookingManagementContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="bookings/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Bookings">
+    <PropertyColumn Property="booking => booking.UserId" />
+    <PropertyColumn Property="booking => booking.Status" />
+    <PropertyColumn Property="booking => booking.CreatedAt" />
+    <PropertyColumn Property="booking => booking.UpdatedAt" />
+    <PropertyColumn Property="booking => booking.DeletedAt" />
+
+    <TemplateColumn Context="booking">
+        <a href="@($"bookings/edit?id={booking.Id}")">Edit</a> |
+        <a href="@($"bookings/details?id={booking.Id}")">Details</a> |
+        <a href="@($"bookings/delete?id={booking.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private BookingManagementContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

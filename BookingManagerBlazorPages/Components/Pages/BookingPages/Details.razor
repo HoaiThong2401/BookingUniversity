@@ -1,0 +1,54 @@
+﻿@page "/bookings/details"
+@using Microsoft.EntityFrameworkCore
+@using Repositories.Entities
+@inject IDbContextFactory<Repositories.Entities.BookingManagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Booking</h2>
+    <hr />
+    @if (booking is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">UserId</dt>
+            <dd class="col-sm-10">@booking.UserId</dd>
+            <dt class="col-sm-2">Status</dt>
+            <dd class="col-sm-10">@booking.Status</dd>
+            <dt class="col-sm-2">CreatedAt</dt>
+            <dd class="col-sm-10">@booking.CreatedAt</dd>
+            <dt class="col-sm-2">UpdatedAt</dt>
+            <dd class="col-sm-10">@booking.UpdatedAt</dd>
+            <dt class="col-sm-2">DeletedAt</dt>
+            <dd class="col-sm-10">@booking.DeletedAt</dd>
+        </dl>
+        <div>
+            <a href="@($"/bookings/edit?id={booking.Id}")">Edit</a> |
+            <a href="@($"/bookings")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Booking? booking;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        booking = await context.Bookings.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (booking is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

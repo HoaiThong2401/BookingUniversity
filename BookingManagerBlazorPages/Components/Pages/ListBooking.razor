@@ -1,0 +1,217 @@
+﻿@page "/ListBooking"
+@using Services.IService
+@using Repositories.ViewModel
+@using Repositories.Entities
+@inject IBookingService BookingService
+@inject ISlotService SlotService
+@inject NavigationManager NavigationManager
+
+
+<h3 class="text-center font-weight-bold">List Booking</h3>
+
+<div class="container mt-4">
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="slotSelect" class="font-weight-bold text-center">Select Slot</label>
+            <select id="slotSelect" class="form-control text-center" @onchange="OnSlotChanged">
+                @foreach (var slot in slots)
+                {
+                    <option value="@slot.Id">@slot.Id</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="statusSelect" class="font-weight-bold text-center">Status</label>
+            <select id="statusSelect" class="form-control text-center" @onchange="OnStatusChanged">
+                <option value="0">Processing</option>
+                <option value="1">Approved</option>
+                <option value="2">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="roomName" class="font-weight-bold text-center">Name of Room</label>
+            <input type="text" id="roomName" class="form-control text-center" @bind="roomName" placeholder="Enter room name" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary" @onclick="() => SearchBookings()" style="background-color: #6a5acd; border-color: #6a5acd;">Search</button>
+        </div>
+    </div>
+
+    @if (bookings != null && bookings.Any())
+    {
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="align-middle text-center">No</th>
+                    <th rowspan="2" class="align-middle text-center">Booking ID</th>
+                    <th rowspan="2" class="align-middle text-center">Booking Status</th>
+                    <th rowspan="2" class="align-middle text-center">Booking Detail ID</th>
+                    <th rowspan="2" class="align-middle text-center">Booking Date</th>
+                    <th rowspan="2" class="align-middle text-center">Slot</th>
+                    <th rowspan="2" class="align-middle text-center">Room</th>
+                    <th rowspan="2" class="align-middle text-center">Reason</th>
+                    <th rowspan="2" class="align-middle text-center">Booking Detail Status</th>
+                    <th rowspan="2" class="align-middle text-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in bookings)
+                {
+                    var rowIndex = 1;
+                    var firstRow = true;
+                    foreach (var detail in booking.BookingDetails)
+                    {
+                        <tr class="align-middle text-center">
+                            @if (firstRow)
+                            {
+                                <td rowspan="@booking.BookingDetails.Count">@rowIndex</td>
+                                <td rowspan="@booking.BookingDetails.Count">
+                                    <a href="@GetBookingLink(booking.Status, booking.BookingId)" class="btn btn-link p-0">
+                                        @booking.BookingId
+                                    </a>
+                                </td>
+                                <td rowspan="@booking.BookingDetails.Count">@GetStatusText(booking.Status)</td>
+                            }
+                            <td>@detail.Id</td>
+                            <td>@detail.BookingDate.ToString("MM/dd/yyyy")</td>
+                            <td>@detail.SlotId</td>
+                            <td>@detail.RoomName</td>
+                            <td>@detail.Reason</td>
+                            <td>@GetStatusText(detail.Status)</td>
+
+                            @if (firstRow)
+                            {
+                                <td rowspan="@booking.BookingDetails.Count">
+                                    <button class="btn btn-danger rounded" @onclick="() => CancelBooking(booking.BookingId)">
+                                        Cancel
+                                    </button>
+                                </td>
+                            }
+
+                        </tr>
+                        rowIndex++;
+                        firstRow = false;
+                    }
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="d-flex justify-content-center mt-4">
+        <button class="btn btn-secondary" @onclick="GoToPreviousPage" disabled="@(!HasPreviousPage)" style="background-color: #6a5acd; border-color: #6a5acd;">Previous</button>
+        <span class="mx-2 text-center">Page @currentPage of @totalPages</span>
+        <button class="btn btn-secondary" @onclick="GoToNextPage" disabled="@(!HasNextPage)" style="background-color: #6a5acd; border-color: #6a5acd;">Next</button>
+    </div>
+</div>
+
+@code {
+    private List<BookingModel> bookings = new List<BookingModel>();
+    private List<Slot> slots = new List<Slot>();
+    private int? selectedStatus = null;
+    private int? selectedSlotId = null;
+    private string roomName = "";
+    private int currentPage = 1;
+    private int totalPages = 1;
+
+    protected override void OnInitialized()
+    {
+        LoadSlots();
+        LoadBookings();
+    }
+
+    private void LoadSlots()
+    {
+        slots = SlotService.GetSlots();
+    }
+
+    private void LoadBookings()
+    {
+        var response = BookingService.GetBookings(selectedStatus, selectedSlotId, roomName, currentPage);
+        bookings = response.Bookings;
+        totalPages = (int)Math.Ceiling((double)response.TotalItems / response.PageSize);
+    }
+
+    private void SearchBookings()
+    {
+        if (string.IsNullOrWhiteSpace(roomName))
+        {
+            roomName = null;
+        }
+        currentPage = 1;
+        LoadBookings();
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (HasPreviousPage)
+        {
+            currentPage--;
+            LoadBookings();
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (HasNextPage)
+        {
+            currentPage++;
+            LoadBookings();
+        }
+    }
+
+    private bool HasPreviousPage => currentPage > 1;
+    private bool HasNextPage => currentPage < totalPages;
+    private string GetStatusText(int status)
+    {
+        return status switch
+        {
+            0 => "Processing",
+            1 => "Approved",
+            2 => "Cancelled",
+        };
+    }
+    private void OnSlotChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int result))
+        {
+            selectedSlotId = result;
+        }
+        else
+        {
+            selectedSlotId = null;
+        }
+    }
+
+    private void OnStatusChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int result))
+        {
+            selectedStatus = result;
+        }
+        else
+        {
+            selectedStatus = null;
+        }
+    }
+    private void CancelBooking(int bookingId)
+    {
+        BookingService.DeleteBooking(bookingId);
+        LoadBookings();
+    }
+    private string GetBookingLink(int status, int bookingId)
+    {
+        if (status == 0)
+        {
+            return $"/EditBooking/{bookingId}";
+        }
+        else
+        {
+            return $"/DetailBooking/{bookingId}";
+        }
+    }
+
+}

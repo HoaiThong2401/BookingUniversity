@@ -1,0 +1,182 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "Manager")]
+@model BookingManagementRazorPages.Pages.Manager.ManagerHomePageModel
+
+@{
+    ViewData["Title"] = "Manager Home";
+    Layout = "_Layout";
+}
+
+<div class="sidebar" id="sidebar">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <ul class="sidebar-menu">
+        <li>
+            <a asp-page="/Manager/UserManagement/UserManagementPage">
+                <span class="icon">👤</span>
+                <span class="text">User Management</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Manager/SlotManagement/SlotManagementPage">
+                <span class="icon">🕒</span>
+                <span class="text">Slot Management</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Manager/RoomManagement/RoomManagementPage">
+                <span class="icon">🏨</span>
+                <span class="text">Room Management</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Manager/CampusManagement/CampusManagementPage">
+                <span class="icon">🏢</span>
+                <span class="text">Campus Management</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Manager/DepartmentManagement/DepartmentManagementPage">
+                <span class="icon">🏫</span>
+                <span class="text">Department Management</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="logout">
+        <a asp-page="/Logout">
+            <span class="logout-icon">🔓</span>
+        </a>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <h1>Manager Home Page</h1>
+    <p>Welcome to the Manager Dashboard. Select a section from the sidebar.</p>
+</div>
+
+<style>
+    .sidebar {
+        width: 250px;
+        background: #4B0082;
+        padding-top: 20px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        color: white;
+        transition: width 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 50px 0 0;
+        margin: 0;
+        flex-grow: 1;
+    }
+
+        .sidebar-menu li {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+            .sidebar-menu a:hover {
+                background: #320060;
+            }
+
+    .logout {
+        padding: 20px;
+        text-align: center;
+    }
+
+        .logout a {
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #cc0000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: auto;
+            transition: background 0.3s;
+        }
+
+            .logout a:hover {
+                background: #a30000;
+            }
+
+    .logout-icon {
+        font-size: 24px;
+        color: white;
+    }
+
+    .icon {
+        font-size: 20px;
+        width: 30px;
+        text-align: center;
+    }
+
+    .text {
+        margin-left: 10px;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar.collapsed .text {
+        display: none;
+    }
+
+    .sidebar.collapsed .sidebar-menu a {
+        justify-content: center;
+    }
+
+    .main-content {
+        margin-left: 270px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.collapsed + .main-content {
+        margin-left: 100px;
+    }
+</style>
+
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var mainContent = document.getElementById("mainContent");
+        sidebar.classList.toggle("collapsed");
+        mainContent.classList.toggle("collapsed");
+    }
+</script>

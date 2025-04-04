@@ -1,0 +1,7 @@
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png
+wwwroot\JS\microsoft-signalr\signalr.js
+wwwroot\JS\microsoft-signalr\signalr.min.js
+wwwroot\JS\navigate.js

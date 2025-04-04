@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BookingManagementRazorPages</title>
+    @RenderSection("Styles", false)
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BookingManagementRazorPages.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-light bg-white border-bottom">
+            <div class="container">
+                <div class="navbar-brand mx-3">
+                    <h1 class="m-0">Booking FPT</h1>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <div class="sidebar-item">
+                        <a href="/TeacherManagement">Teacher Management</a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a href="/HeadDepartment/ListBookingRequired">Booking Required Management</a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a href="/BookingStatusManagement">Booking Status Management</a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a href="/RoomManagement">Room Management</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

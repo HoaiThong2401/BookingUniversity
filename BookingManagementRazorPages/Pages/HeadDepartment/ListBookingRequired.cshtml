@@ -1,0 +1,166 @@
+﻿@page
+@model BookingManagementRazorPages.Pages.HeadDepartment.ListBookingRequiredModel
+@{
+    ViewData["Title"] = "List Booking Required";
+}
+
+<style>
+    .page-title {
+        color: black;
+        font-weight: bold;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        display: flex;
+        justify-content: left;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-right: 15px;
+    }
+
+    .table-container {
+        margin-top: 20px;
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+    .button-approved,
+    .button-denied {
+        width: 100%;
+        padding: 8px 0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .button-approved {
+        background-color: #28a745;
+        color: white;
+        margin-bottom: 10px; 
+    }
+
+    .button-denied {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    td {
+        text-align: center; 
+        vertical-align: middle;
+    }
+
+    th {
+        text-align: center; 
+        vertical-align: middle; 
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+</style>
+
+<div class="container">
+    <div class="page-title">
+        <h2>List Booking Required</h2>
+    </div>
+
+    <div class="form-container">
+        <form method="get" class="d-flex">
+            <div class="form-group">
+                <select id="status" name="status" class="form-select">
+                    <option value="">Select Status</option>
+                    <option value="0">Processing</option>
+                    <option value="1">Approved</option>
+                    <option value="2">Cancelled</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>User Booking</th>
+                    <th>Booking ID</th>
+                    <th>Booking Detail ID</th>
+                    <th>Booking Date</th>
+                    <th>Slot</th>
+                    <th>Room</th>
+                    <th>Reason</th>
+                    <th>Booking Detail Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in Model.Bookings)
+                {
+                    var item = 1;
+                    var bookingId = booking.BookingId;
+                    foreach (var detail in booking.BookingDetails)
+                    {
+                        <tr>
+                            @if (item == 1)
+                            {
+                                <td rowspan="@booking.BookingDetails.Count">@item</td>
+                                <td rowspan="@booking.BookingDetails.Count">@booking.UserId</td>
+                                <td rowspan="@booking.BookingDetails.Count">@bookingId</td>
+                            }
+                            <td>@detail.Id</td>
+                            <td>@detail.BookingDate.ToShortDateString()</td>
+                            <td>@detail.SlotId (@detail.SlotStartTime.ToString("HH:mm") - @detail.SlotEndTime.ToString("HH:mm"))</td>
+                            <td>@detail.RoomName</td>
+                            <td>@detail.Reason</td>
+                            <td>@detail.Status</td>
+                            <td>
+                                <form method="post" asp-page-handler="Approve" class="d-inline">
+                                    <input type="hidden" name="bookingDetailId" value="@detail.Id" />
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="button-approved">Approved</button>
+                                </form>
+                                <form method="post" asp-page-handler="Deny" class="d-inline">
+                                    <input type="hidden" name="bookingDetailId" value="@detail.Id" />
+                                    <input type="hidden" name="approvalStatus" value="false" />
+                                    <button type="submit" class="button-denied">Denied</button>
+                                </form>
+                            </td>
+                        </tr>
+                        item++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalItems > Model.PageSize)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @for (var i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.PageSize); i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="?pageNumber=@i&status=@Request.Query["status"]">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

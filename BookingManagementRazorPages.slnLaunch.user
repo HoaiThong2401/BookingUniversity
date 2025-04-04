@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "BookingManagementRazorPages\\BookingManagementRazorPages.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BookingManagerBlazorPages\\BookingManagerBlazorPages.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

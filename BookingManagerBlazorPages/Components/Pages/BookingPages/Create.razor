@@ -1,0 +1,41 @@
+﻿@page "/bookings/create"
+@using Microsoft.EntityFrameworkCore
+@using Repositories.Entities
+@inject IDbContextFactory<Repositories.Entities.BookingManagementContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Booking</PageTitle>
+
+<h1>Create Booking</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@Booking" OnValidSubmit="AddBooking">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/bookings">Back to List</a>
+</div>
+
+@code {
+    private Booking Booking { get; set; } = new();
+
+    private async Task AddBooking()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Bookings.Add(Booking);
+        await context.SaveChangesAsync();
+
+        // Hiển thị thông báo (có thể thay bằng SweetAlert2 nếu cần)
+        Console.WriteLine("Booking created successfully!");
+
+        // Chuyển hướng sau khi tạo xong
+        NavigationManager.NavigateTo("/bookings");
+    }
+}

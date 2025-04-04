@@ -1,0 +1,169 @@
+﻿@page "/EditBooking/{BookingId:int}"
+@inject NavigationManager NavigationManager
+@using Services.IService
+@using Repositories.Entities
+@using Repositories.ViewModel
+@inject IBookingService BookingService
+@inject ISlotService SlotService
+@inject IRoomService RoomService
+
+<h3 class="text-center font-weight-bold">Update Your Booking</h3>
+
+<div class="mt-4">
+    @if (booking != null)
+    {
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Booking ID</th>
+                    <th class="text-center">Booking Status</th>
+                    <th class="text-center">Booking Detail ID</th>
+                    <th class="text-center">Booking Date</th>
+                    <th class="text-center">Slot</th>
+                    <th class="text-center">Room</th>
+                    <th class="text-center">Reason</th>
+                    <th class="text-center">Booking Detail Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in booking.BookingDetails.Select((detail, idx) => new { detail, idx }))
+                {
+                    <tr class="align-middle text-center">
+                        <td>@(item.idx + 1)</td>
+                        <td>@booking.BookingId</td>
+                        <td>@GetStatusText(booking.Status)</td>
+                        <td>@item.detail.Id</td>
+                        <td>
+                            <input type="date" class="form-control" @bind="item.detail.BookingDate" />
+                        </td>
+                        <td>
+                            <select class="form-control" @bind="item.detail.SlotId">
+                                <option value="">Select Slot</option>
+                                @foreach (var slot in slots)
+                                {
+                                    <option value="@slot.Id" @(slot.Id= =item.detail.SlotId ? "selected" : "" )>@slot.Id</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control" @bind="item.detail.RoomId">
+                                <option value="">Select Room</option>
+                                @foreach (var room in rooms)
+                                {
+                                    <option value="@room.Id" @(room.Id= =item.detail.RoomId ? "selected" : "" )>@room.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" @bind="item.detail.Reason" placeholder="Enter Booking Reason" />
+                        </td>
+                        <td>@GetStatusText(item.detail.Status)</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between">
+            <a href="/ListBooking" class="btn-back-to-list mt-3">
+                Back to List
+            </a>
+
+            <button class="btn btn-update mt-3" @onclick="UpdateBooking">
+                Update
+            </button>
+        </div>
+
+    }
+    else
+    {
+        <p>Loading booking information...</p>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(saveMessage))
+{
+    <div class="alert @alertClass mt-3">
+        @saveMessage
+    </div>
+}
+<style>
+    .btn-back-to-list,
+    .btn-update {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #6a5acd; 
+        color: white; 
+        font-weight: bold;
+        text-align: center;
+        border-radius: 5px; 
+        text-decoration: none; 
+        transition: opacity 0.3s ease, background-color 0.3s ease; 
+        cursor: pointer;
+    }
+
+        .btn-back-to-list:hover,
+        .btn-update:hover {
+            background-color: #5b4a9a; 
+            opacity: 0.8;
+        }
+
+        .btn-back-to-list:active,
+        .btn-update:active {
+            background-color: #4d3c82;
+            opacity: 0.6; 
+        }
+
+</style>
+@code {
+    [Parameter]
+    public int BookingId { get; set; }
+
+    private BookingModel booking;
+    private List<Slot> slots = new List<Slot>();
+    private List<Room> rooms = new List<Room>();
+    private string saveMessage = string.Empty;
+    private string alertClass = string.Empty;
+    private List<BookingDetailViewModel> bookingDetails = new List<BookingDetailViewModel>();
+
+    protected override void OnInitialized()
+    {
+        slots = SlotService.GetSlots();
+        rooms = RoomService.GetRooms();
+        booking = BookingService.GetBookingById(BookingId);
+        bookingDetails = booking.BookingDetails.ToList();
+    }
+
+    private void UpdateBooking()
+    {
+        try
+        {
+            var bookingEntity = new BookingModel
+                {
+                    BookingId = booking.BookingId,
+                    Status = booking.Status,
+                };
+
+            BookingService.UpdateBooking(bookingEntity);
+            saveMessage = "Booking updated successfully!";
+            alertClass = "alert-success";
+        }
+        catch (Exception)
+        {
+            saveMessage = "Failed to update the booking.";
+            alertClass = "alert-danger";
+        }
+    }
+
+
+    private string GetStatusText(int status)
+    {
+        return status switch
+        {
+            0 => "Processing",
+            1 => "Approved",
+            2 => "Canceled",
+        };
+    }
+}

@@ -1,0 +1,217 @@
+﻿@page "/TeacherHomePage"
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Services.IService
+@using Repositories.Entities
+@using Repositories.ViewModel
+@inject IRoomService RoomService
+@inject ISlotService SlotService
+@inject IBookingService BookingService
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<h2 class="text-center text-primary">Create New Booking</h2>
+
+@* @if (IsValidRole)
+{} *@
+<div class="d-flex align-items-center">
+    <button class="btn btn-primary custom-btn" @onclick="GoToCreateBooking"> 
+        Create Booking
+    </button>
+    @if (showError)
+    {
+        <span class="text-danger ml-5 font-italic">You don't have permission to create over 5 booking detail in once time</span>
+    }
+</div>
+
+<div class="mt-3">
+    @foreach (var booking in bookings)
+    {
+        <div class="booking-container border p-3 mt-3 rounded position-relative"
+             style="border-radius: 10px; border: 1px solid #6a5acd;">
+
+            <button class="close-btn" @onclick="() => RemoveBooking(booking)">x</button>
+
+            <div class="d-flex justify-content-between text-center font-weight-bold">
+                <span class="flex-fill">Booking Date</span>
+                <span class="flex-fill">Booking Slot</span>
+                <span class="flex-fill">Booking Room</span>
+                <span class="flex-fill">Booking Reason</span>
+            </div>
+
+            <div class="d-flex justify-content-between text-center mt-2">
+                <input type="date" class="form-control flex-fill mx-2" @bind="booking.Date" />
+                <select class="form-control flex-fill mx-2" @bind="booking.SlotId">
+                    <option value="">Select Slot</option>
+                    @foreach (var slot in slots)
+                    {
+                        <option value="@slot.Id">@slot.Id</option>
+                    }
+                </select>
+
+                <select class="form-control flex-fill mx-2" @bind="booking.RoomId">
+                    <option value="">Select Room</option>
+                    @foreach (var room in rooms)
+                    {
+                        <option value="@room.Id">@room.Name</option>
+                    }
+                </select>
+                <input type="text" class="form-control flex-fill mx-2" placeholder="Enter Booking Reason" @bind="booking.Reason" />
+            </div>
+        </div>
+    }
+
+    @if (bookings.Any())
+    {
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary mt-2 custom-btn" @onclick="SaveBooking">
+                Save
+            </button>
+        </div>
+    }
+</div>
+@if (!string.IsNullOrEmpty(saveMessage))
+{
+    <div class="alert @alertClass mt-3">
+        @saveMessage
+    </div>
+}
+
+<style>
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .close-btn:hover {
+            background-color: black;
+            color: white;
+        }
+
+    .custom-btn {
+        background-color: #6a5acd;
+        border-radius: 8px;
+        color: white;
+        transition: opacity 0.3s;
+        cursor: pointer;
+    }
+
+        .custom-btn:hover {
+            opacity: 0.7;
+        }
+
+    .alert {
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+}
+@* else
+{
+<p>You are not authorized to view this page.</p>
+} *@
+
+@code {
+    private List<BookingDetailModel> bookings = new List<BookingDetailModel>();
+    private List<Room> rooms = new List<Room>();
+    private List<Slot> slots = new List<Slot>();
+    private bool showError = false;
+    private string saveMessage = string.Empty;
+    private string alertClass = string.Empty;
+    private bool IsValidRole = false;
+    private bool redirectToHome = false;
+
+    // protected override void OnAfterRender(bool firstRender)
+    // {
+    //     if (redirectToHome && firstRender)
+    //     {
+    //         JS.InvokeVoidAsync("navigateToExternal", "http://localhost:5168/Index");
+    //         StateHasChanged();
+    //     }
+
+    //     base.OnAfterRender(firstRender); 
+    // }
+
+    protected override void OnInitialized()
+    {
+        // var uri = Navigation.Uri;
+        // var uriQuery = new Uri(uri).Query;
+        // var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriQuery);
+
+        // if (queryParams.ContainsKey("roleId") && queryParams["roleId"] == "3" && !string.IsNullOrEmpty(queryParams["userId"]))
+        // {
+        //     JS.InvokeVoidAsync("setCookie", "roleId", queryParams["roleId"].ToString(), 1.0 / 6);
+        //     JS.InvokeVoidAsync("setCookie", "userId", queryParams["userId"].ToString(), 1.0 / 6);
+        //     JS.InvokeVoidAsync("setCookie", "name", queryParams["name"].ToString(), 1.0 / 6);
+
+        //     IsValidRole = true;
+        // }
+        // else
+        // {
+        //     IsValidRole = false;
+        //     redirectToHome = true;
+        // }
+        rooms = RoomService.GetRooms();
+        slots = SlotService.GetSlots();
+    }
+
+    private void GoToCreateBooking()
+    {
+        if (bookings.Count >= 5)
+        {
+            showError = true;
+        }
+        else
+        {
+            showError = false;
+            bookings.Add(new BookingDetailModel());
+        }
+    }
+
+    private void RemoveBooking(BookingDetailModel booking)
+    {
+        bookings.Remove(booking);
+        if (bookings.Count < 5)
+        {
+            showError = false;
+        }
+    }
+
+    private void SaveBooking()
+    {
+        try
+        {
+            var userId = 1;
+            BookingService.SaveBooking(bookings, userId);
+            bookings.Clear();
+
+            saveMessage = "Save your booking success!";
+            alertClass = "alert-success";
+        }
+        catch (Exception)
+        {
+            saveMessage = "Save your booking failed!";
+            alertClass = "alert-danger";
+        }
+    }
+}  
