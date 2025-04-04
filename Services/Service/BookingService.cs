@@ -279,6 +279,59 @@ namespace Services.Service
             return GetBookingById(bookingDetail.BookingId);
         }
 
+        public PaginatedBookingResponse GetBookingForManagers(int? status, int pageNumber = 1, int pageSize = 10)
+        {
+            var bookingIdsWithApproval = _unitOfWork.ApprovalHistoryRepository.Entities
+                .Where(ah => ah.ApprovalByHeadDepartment == true)
+                .Select(ah => ah.BookingId)
+                .Distinct()
+                .ToList();
+            var query = _unitOfWork.BookingRepository.Entities
+               .Include(b => b.User)
+               .Include(b => b.BookingDetails)
+                   .ThenInclude(bd => bd.Slot)
+               .Include(b => b.BookingDetails)
+                   .ThenInclude(bd => bd.Room)
+               .Where(b => bookingIdsWithApproval.Contains(b.Id));
+
+            if (status.HasValue)
+            {
+                query = query.Where(b => b.Status == status.Value);
+            }
+            var totalItems = query.Count();
+
+            var bookings = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(b => new BookingModel
+                {
+                    BookingId = b.Id,
+                    UserId = b.UserId,
+                    Status = b.Status,
+                    UserName = b.User.FullName,
+                    BookingDetails = b.BookingDetails
+                        .Select(bd => new BookingDetailViewModel
+                        {
+                            Id = bd.Id,
+                            BookingDate = bd.BookingDate.ToDateTime(new TimeOnly(0, 0)),
+                            SlotId = bd.SlotId,
+                            SlotStartTime = bd.Slot.StartTime,
+                            SlotEndTime = bd.Slot.EndTime,
+                            RoomName = bd.Room.Name,
+                            Reason = bd.Reason,
+                            Status = bd.Status,
+                        }).ToList()
+                }).ToList();
+
+            return new PaginatedBookingResponse
+            {
+                TotalItems = totalItems,
+                Bookings = bookings,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
 
     }
 }

@@ -17,5 +17,6 @@ namespace Services.IService
         bool DeleteBooking(int bookingId);
         PaginatedBookingResponse GetBookingForHeadDepartments(int? status, int pageNumber = 1, int pageSize = 10);
         BookingModel GetBookingByBookingDetailId(int bookingDetailId, int bookingId);
+        PaginatedBookingResponse GetBookingForManagers(int? status, int pageNumber = 1, int pageSize = 10);
     }
 }

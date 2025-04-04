@@ -8,33 +8,64 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingManagementRazorPages.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-light bg-white border-bottom">
-            <div class="container">
-                <div class="navbar-brand mx-3">
-                    <h1 class="m-0">Booking FPT</h1>
-                </div>
-            </div>
-        </nav>
-    </header>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-3">
-                <div class="sidebar">
-                    <div class="sidebar-item">
-                        <a href="/TeacherManagement">Teacher Management</a>
-                    </div>
-                    <div class="sidebar-item">
-                        <a href="/HeadDepartment/ListBookingRequired">Booking Required Management</a>
-                    </div>
-                    <div class="sidebar-item">
-                        <a href="/BookingStatusManagement">Booking Status Management</a>
-                    </div>
-                    <div class="sidebar-item">
-                        <a href="/RoomManagement">Room Management</a>
+                <div class="sidebar" id="sidebar">
+                    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+                    <ul class="sidebar-menu">
+                        <li>
+                            <a asp-page="/Manager/UserManagement/UserManagementPage">
+                                <span class="icon"><i class="bi bi-person"></i></span>
+                                <span class="text">User Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Manager/SlotManagement/SlotManagementPage">
+                                <span class="icon"><i class="bi bi-calendar"></i></span>
+                                <span class="text">Slot Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Manager/RoomManagement/RoomManagementPage">
+                                <span class="icon"><i class="bi bi-house-door"></i></span>
+                                <span class="text">Room Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Manager/CampusManagement/CampusManagementPage">
+                                <span class="icon"><i class="bi bi-building"></i></span>
+                                <span class="text">Campus Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Manager/DepartmentManagement/DepartmentManagementPage">
+                                <span class="icon"><i class="bi bi-journal-bookmark"></i></span>
+                                <span class="text">Department Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/Manager/ListBookingFromDepartment">
+                                <span class="icon"><i class="bi bi-list"></i></span>
+                                <span class="text">Booking Requiered Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/HeadDepartment/ListBookingRequired">
+                                <span class="icon"><i class="bi bi-list"></i></span>
+                                <span class="text">List Booking Required</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="logout">
+                        <a asp-page="/Index">
+                            <span class="logout-icon"><i class="bi bi-box-arrow-right"></i></span>
+                        </a>
                     </div>
                 </div>
             </div>
